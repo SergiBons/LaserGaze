@@ -73,7 +73,7 @@ The following scheme details the connections between all components:
 
 ## Software Architecture
 
-<img src="images/software-diagram.jpg" alt="software-diagram" width="984" height="480">
+<img src="images/software-diagram.jpg" alt="software-diagram" width="984" height="450">
 
 ### Cloud functions:
 #### Image Processing.
