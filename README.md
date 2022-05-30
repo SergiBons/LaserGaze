@@ -32,6 +32,8 @@ Features:
 
 2. Python code commented to grant an easier undestanding of its functionality.
 
+3. Designs of the 3D pieces used in the final build.
+
 
 ## Requirements
 
