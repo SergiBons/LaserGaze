@@ -69,7 +69,7 @@ List of the components used in the project:
 
 The following scheme details the connections between all components:
 
-<img src="images/hardware_diagram.png" alt="hardware_diagram" width="984" height="801">
+<img src="images/hardware_diagram.jpg" alt="hardware_diagram" width="984" height="801">
 
 ## Software Architecture
 
