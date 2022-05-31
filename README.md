@@ -82,34 +82,34 @@ The following scheme details the connections between all components:
 
 ### Cloud functions:
 #### Image Processing.
-Is called by the cloud manager, and proceeds to grab a specific image from the cloud storage and process it to return interest points.
+- Is called by the cloud manager, and proceeds to grab a specific image from the cloud storage and process it to return interest points.
 #### Anchor detect.
-Is called by the cloud manager, and proceeds to grab a specific image from the cloud storage and look for points to anchor itself.
+- Is called by the cloud manager, and proceeds to grab a specific image from the cloud storage and look for points to anchor itself.
 ### cloud_manager.py:
 #### Cloud manager.
-Is called by the main algorithm to upload and regulate images in the cloud.
+- Is called by the main algorithm to upload and regulate images in the cloud.
 ### lasergaze.py:
 #### Main Algorithm.
-Decides on which actions to take based on the inputs of the other modules.
+- Decides on which actions to take based on the inputs of the other modules.
 #### Path Planning.
-Sends to the Stepper Controller module the angles to get to the position the Main Algorithm dictates.
+- Sends to the Stepper Controller module the angles to get to the position the Main Algorithm dictates.
 ### camera.py:
 #### Camera controller.
-Controls the camera, returns a picture when called.
+- Controls the camera, returns a picture when called.
 ### stepper.py:
 #### Stepper Controller.
-Regulates the steps each motor makes as well as the equivalent in degrees.
+- Regulates the steps each motor makes as well as the equivalent in degrees.
 ### point.py:
 #### Point computing.
-Set of trigonometry utilities that calculate points from steps and distance measures.
+- Set of trigonometry utilities that calculate points from steps and distance measures.
 #### Position Calculation.
-Calculates the absolute position of the robot from its relative position to the anchors.
+- Calculates the absolute position of the robot from its relative position to the anchors.
 ### read_from_arduino.py:
 #### Arduino preprocessor.
-Receives data from the Arduino-connected laser and sends it to the main Algorithm when requested.
+- Receives data from the Arduino-connected laser and sends it to the main Algorithm when requested.
 ### Arduino/TfMiniToSerial.ino:
 #### Laser controller.
-Laser Arduino code that allows for cyclic measurement.
+- Laser Arduino code that allows for cyclic measurement.
 
 
 ## Amazing Contributions
@@ -123,10 +123,10 @@ Laser Arduino code that allows for cyclic measurement.
 
 ## Authors
 
--Sergi Bons Fuses 
+- Sergi Bons Fuses 
 
--Guillem Centelles Pavon
+- Guillem Centelles Pavon
 
--David Méndez Ribera
+- David Méndez Ribera
 
--Gerard Sánchez Sivill
+- Gerard Sánchez Sivill
