@@ -10,22 +10,25 @@ class Arduino:
             self._ser.open()
 
     def get_data(self):
-        distance = '-1'
         time0 = time.time()
         self._ser.reset_input_buffer()
         count = 0
+        buffer = []
         while True:
             if time.time() > time0 + 5:
                 break
             if self._ser.in_waiting > 5:
                 if count > 0:
-                    distance = self._ser.readline().decode('utf-8').rstrip()
-                    break
+                    buffer.append(int(self._ser.readline().decode('utf-8').rstrip()))
+                    if count >= 3:
+                        break
                 else:
                     self._ser.readline()
-                    count = count + 1
-        
-        return int(distance)
+                count = count + 1
+        if len(buffer) != 3:
+            return -1
+        buffer.sort()
+        return buffer[1]
 
     def print_thread(self):
         distance = '-1'

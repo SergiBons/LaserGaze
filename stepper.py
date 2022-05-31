@@ -22,7 +22,6 @@ class StepperMotor:
         self.step_sleep = 0.001        # careful lowering this, at some point you run into the mechanical limitation of how quick your motor can move
         self.max_step_count = 4096     # 5.625*(1/64) per step, 4096 steps is 360°
         self.direction = True         # True for counter_clockwise, False for clockwise
-
         self.initialize()
 
     def initialize(self):

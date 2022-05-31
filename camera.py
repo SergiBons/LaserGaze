@@ -8,8 +8,8 @@ class Camera:
 
     def __init__(self, resolution=(1920, 1080)):
         self.piCam = PiCamera()
-        self.h_fov = 62.2
-        self.v_fov = 48.8
+        self.h_fov = 39.5   # 62.2
+        self.v_fov = None   # 48.8
         if resolution is not None:
             self.piCam.resolution = resolution  # SetUp camera resolution
         self.h_size = self.piCam.resolution[0]

@@ -1,13 +1,16 @@
 import math
 
+points_file_path = "./points/points"
+
 
 def find_coord_self(lambda_a, fi_a, dist_a, lambda_b, fi_b, dist_b):
-    print("Lambda_a: " + str(lambda_a))
-    print("Fi_a: " + str(fi_a))
-    print("Dist_a: " + str(dist_a))
-    print("Lambda_b: " + str(lambda_b))
-    print("Fi_b: " + str(fi_b))
-    print("Dist_b: " + str(dist_b))
+    #print("Lambda_a: " + str(lambda_a))
+    #print("Fi_a: " + str(fi_a))
+    #print("Dist_a: " + str(dist_a))
+    #print("Lambda_b: " + str(lambda_b))
+    #print("Fi_b: " + str(fi_b))
+    #print("Dist_b: " + str(dist_b))
+    
     # Les coordenades (0,0) aniran sobre l'ancora A amb z vertical i x apuntant a la direcció de l'ancora B
     #   de tal manera que l'ancora B quedara situada sobre el pla XZ.
 
@@ -51,7 +54,7 @@ def find_coord_self(lambda_a, fi_a, dist_a, lambda_b, fi_b, dist_b):
             
     else:
         orient = lambda_a + (180 - lambda_blg)
-        if orient > 360:
+        if orient >= 360:
             orient = orient - 360
             
     
@@ -59,17 +62,17 @@ def find_coord_self(lambda_a, fi_a, dist_a, lambda_b, fi_b, dist_b):
         orient = lambda_a
         if da_xy > db_xy:
             orient = orient + 180
-            if orient > 360:
+            if orient >= 360:
                 orient = orient - 360
                 
-    print("x: " + str(x))
-    print("y: " + str(y))
-    print("z: " + str(z))
-    print("orient: " + str(orient))
+    #print("x: " + str(x))
+    #print("y: " + str(y))
+    #print("z: " + str(z))
+    #print("orient: " + str(orient))
     return x, y, z, orient
 
 
-def go_to_point(x_mov, y_mov, lambda_img, fi_img, open_h, size_h, size_v):
+def image_point_to_angle_config(x_mov, y_mov, lambda_img, fi_img, open_h, size_h, size_v):
 
     x = x_mov - 0.5  # Posem el (0,0) de les coordenades normalitzades al centre de la imatge
     y = y_mov - 0.5
@@ -79,7 +82,7 @@ def go_to_point(x_mov, y_mov, lambda_img, fi_img, open_h, size_h, size_v):
     inc_lambda = math.degrees(math.atan(x*size_h/dist))  # Calculem el desplaçament de lambda i fi respecte el
     inc_fi = math.degrees(math.atan(y*size_v/dist))       # vector perpendicular a la imatge situat a (0,0)
 
-    lambda_dest = lambda_img - inc_lambda  # Apliquem aquest desplaçament a la posició que tenia
+    lambda_dest = lambda_img - inc_lambda + 5  # Apliquem aquest desplaçament a la posició que tenia
     fi_dest = fi_img - inc_fi              # el robot durant la presa de la imatge.
 
     if lambda_dest > 360:
@@ -87,17 +90,17 @@ def go_to_point(x_mov, y_mov, lambda_img, fi_img, open_h, size_h, size_v):
     elif lambda_dest < 0:
         lambda_dest = 360 + lambda_dest
     
-    print("x_mov: " + str(x_mov))
-    print("y_mov: " + str(y_mov))
-    print("Lambda_img: " + str(lambda_img))
-    print("Fi_img: " + str(fi_img))
-    print("Open_h: " + str(open_h))
-    print("Size_h: " + str(size_h))
-    print("Size_v: " + str(size_v))
-    print("Lambda dest: " + str(lambda_dest))
-    print("Fi dest: " + str(fi_dest))
-    print("Inc Lambda: " + str(inc_lambda))
-    print("Inc Fi: " + str(inc_fi))
+    #print("x_mov: " + str(x_mov))
+    #print("y_mov: " + str(y_mov))
+    #print("Lambda_img: " + str(lambda_img))
+    #print("Fi_img: " + str(fi_img))
+    #print("Open_h: " + str(open_h))
+    #print("Size_h: " + str(size_h))
+    #print("Size_v: " + str(size_v))
+    #print("Lambda dest: " + str(lambda_dest))
+    #print("Fi dest: " + str(fi_dest))
+    #print("Inc Lambda: " + str(inc_lambda))
+    #print("Inc Fi: " + str(inc_fi))
     return lambda_dest, fi_dest
 
 
@@ -115,3 +118,14 @@ def create_point(dist, current_lambda, current_fi, lg_x, lg_y, lg_z, lg_orient):
     z = (math.cos(math.radians(current_fi)) * dist) + lg_z
 
     return {'x': x, 'y': y, 'z': z}
+
+
+def print_points_to_file(points, file_path=points_file_path):
+    with open(file_path, 'a') as file:
+        for point in points:
+            file.write(str(point['x']) + ',' + str(point['y']) + ',' + str(point['z']) + '\n')
+
+
+def clear_points_file(file_path=points_file_path):
+    with open(file_path, 'r+') as file:
+        file.truncate(0)

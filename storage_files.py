@@ -2,12 +2,23 @@ from google.cloud import storage
 
 
 def upload_to_bucket(blob_name, path_to_file, points=False):
-    """ Upload data to a bucket """
+    """
+    Upload data to a bucket
+
+    Arguments.
+    blob_name: String with the name to save the image with in the storage.
+    file_path: String with the path to the image to upload.
+    points: Boolean denoting if we want to upload an image to the img folder, or a file with 3D points to
+            the point_cloud folder.
+
+    Returns.
+    public_url: String with the url to go to the image in the storage.
+    """
 
     # Explicitly use service account credentials by specifying the private key
     # file.
     # Insert here your account credentials file
-    credentials_file_path = '/home/lasergaze/Desktop/Repo/cloud_credentials_and_links/anchor-recognition-0810bc18ca59.json'
+    credentials_file_path = './cloud_credentials_and_links/anchor-recognition-0810bc18ca59.json'
     storage_client = storage.Client.from_service_account_json(credentials_file_path)
 
     # print(buckets = list(storage_client.list_buckets())
@@ -26,11 +37,19 @@ def upload_to_bucket(blob_name, path_to_file, points=False):
 
 
 def download_from_bucket(file_name, points=False):
-    """ Download data from the lasergaze-data bucket """
+    """
+    Download data from the lasergaze-data bucket
+
+    Arguments.
+    file_name: String with the name of the image in the storage.
+    points: Boolean denoting if we want to download an image from the img folder, or a file with 3D points from
+            the points folder.
+
+    """
 
     # Initialise a client
     # Insert here your account credentials file
-    credentials_file_path = '/home/lasergaze/Desktop/Repo/cloud_credentials_and_links/anchor-recognition-0810bc18ca59.json'
+    credentials_file_path = './cloud_credentials_and_links/anchor-recognition-0810bc18ca59.json'
     storage_client = storage.Client.from_service_account_json(credentials_file_path)
 
     # Create a bucket object for our bucket
@@ -46,18 +65,3 @@ def download_from_bucket(file_name, points=False):
 
     # Download the file to a destination
     blob.download_to_filename(file_name)
-
-
-
-## Example of usage (upload_to_bucket)
-
-# blob = 'tpose.jpg' # Name to save the uploaded file on the cloud
-# path = 'C:/Users/megag/OneDrive/Escritorio/UAB/3er/S.M/Projecte/tpose.jpg' # Path to the file to be uploaded
-
-# url = upload_to_bucket(blob,path) # URL of the uploaded file
-
-## Example of usage (download_from_bucket)
-
-# file = "tpose.jpg"
-
-# download_from_bucket(file)
