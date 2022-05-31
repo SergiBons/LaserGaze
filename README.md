@@ -1,6 +1,6 @@
 # LaserGaze
 
-<img src="images/Laser-Gaze.jpg" alt="licence" width="984" height="738">
+<img src="images/Laser-Gaze.jpg" alt="licence">
 
 ## Automatic 3D Space mapping from laser scanning and computer vision based tethering
 LaserGaze is a robot capable to map and scan interiors easily and return this mapping as a file that can be analyzed and modified as the user sees fit.
@@ -74,11 +74,11 @@ List of the components used in the project:
 
 The following scheme details the connections between all components:
 
-<img src="images/hardware_diagram.jpg" alt="hardware_diagram" width="984" height="752">
+<img src="images/hardware_diagram.jpg" alt="hardware_diagram">
 
 ## Software Architecture
 
-<img src="images/software-diagram.jpg" alt="software-diagram" width="984" height="520">
+<img src="images/software-diagram.jpg" alt="software-diagram">
 
 ### Cloud functions:
 #### Image Processing.
@@ -119,7 +119,7 @@ Laser Arduino code that allows for cyclic measurement.
 - Adaptability: Specially the hardware part of this project allows for varying substitutes, which would likely result in a greater quality at an increasing cost in both money and time investment.
 
 ## Licence
-<img src="images/licence.png" alt="licence" width="655" height="193">
+<img src="images/licence.png" alt="licence">
 
 ## Authors
 
