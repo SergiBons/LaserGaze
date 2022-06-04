@@ -5,11 +5,23 @@ import time
 class Arduino:
     
     def __init__(self, serial_port="/dev/ttyUSB0"):
+        """
+        Initializes the serial communication.
+
+        @param serial_port: Object to where to listen for serial communications.
+        """
         self._ser = serial.Serial(serial_port, 9600, timeout=5)
         if not self._ser.is_open:
             self._ser.open()
 
     def get_data(self):
+        """
+        Performs 4 lectures, discards the first one as it may be cut in half, and returns the mode of the other 3
+        in order to avoid errors.
+
+        @return: distance read by the TfMini LIDAR.
+        """
+
         time0 = time.time()
         self._ser.reset_input_buffer()
         count = 0
@@ -31,6 +43,10 @@ class Arduino:
         return buffer[1]
 
     def print_thread(self):
+        """
+        Constantly prints the distances that the TfMini LIDAR is reading.
+        """
+
         distance = '-1'
         time0 = time.time()
         self._ser.reset_input_buffer()
@@ -40,6 +56,12 @@ class Arduino:
                 print(distance)
 
     def print_thread_to_file(self, file_path="dist"):
+        """
+        Constantly prints the distances that the TfMini LIDAR is reading to a file.
+
+        @param file_path: File to print the distance to.
+        """
+
         distance = '-1'
         self._ser.reset_input_buffer()
         while True:

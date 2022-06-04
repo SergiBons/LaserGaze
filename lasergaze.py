@@ -11,7 +11,10 @@ import math
 class Robot:
 
     def __init__(self):
-        
+        """
+        Sets up all data structures needed, and the components of the robot.
+        """
+
         # Pins assignats al Stepper 1
         self.pins_stepper1 = [18, 23, 24, 25]
 
@@ -53,6 +56,14 @@ class Robot:
         self.points = []
 
     def quick_static_scan(self, n_img_max=None, degrees_between_heights=None):
+        """
+        Prepares a new scan, performs a wide barrage of points scan, and finishes the scan uploading the results to the
+        cloud storage.
+
+        @param n_img_max: Maximum number of images to take in a height in the wide barrage of points scan.
+        @param degrees_between_heights: Degrees between each height the wide barrage of points scan will scan.
+        """
+
         self.prepare_new_scan()
         if n_img_max is None and degrees_between_heights is None:
             self.take_wide_barrage_of_points()
@@ -61,6 +72,14 @@ class Robot:
         self.finish_scan()
 
     def complete_static_scan(self, n_img_max=None, degrees_between_heights=None):
+        """
+        Prepares a new scan, performs a points of interest scan, a wide barrage of points scan, and finishes the scan
+        uploading the results to the cloud storage.
+
+        @param n_img_max: Maximum number of images to take in a height in the wide barrage of points scan.
+        @param degrees_between_heights: Degrees between each height the wide barrage of points scan will scan.
+        """
+
         self.prepare_new_scan()
         self.find_points_of_interest()
         if n_img_max is None and degrees_between_heights is None:
@@ -70,6 +89,13 @@ class Robot:
         self.finish_scan()
 
     def quick_mobile_scan(self, n_img_max=None, degrees_between_heights=None):
+        """
+        Performs a wide barrage of points scan.
+
+        @param n_img_max: Maximum number of images to take in a height in the wide barrage of points scan.
+        @param degrees_between_heights: Degrees between each height the wide barrage of points scan will scan.
+        """
+
         self.localize_self()
         if n_img_max is None and degrees_between_heights is None:
             self.take_wide_barrage_of_points()
@@ -77,6 +103,13 @@ class Robot:
             self.take_wide_barrage_of_points(n_img_max=n_img_max, degrees_between_heights=degrees_between_heights)
 
     def complete_mobile_scan(self, n_img_max=None, degrees_between_heights=None):
+        """
+        Performs a points of interest scann and a wide barrage of points scan.
+
+        @param n_img_max: Maximum number of images to take in a height in the wide barrage of points scan.
+        @param degrees_between_heights: Degrees between each height the wide barrage of points scan will scan.
+        """
+
         self.localize_self_and_find_points_of_interest()
         if n_img_max is None and degrees_between_heights is None:
             self.take_wide_barrage_of_points(needs_reset=False)
@@ -84,13 +117,30 @@ class Robot:
             self.take_wide_barrage_of_points(needs_reset=False, n_img_max=n_img_max, degrees_between_heights=degrees_between_heights)
 
     def prepare_new_scan(self):
+        """
+        Clears the already created points stored in the points file.
+        """
         clear_points_file()
 
     def finish_scan(self):
+        """
+        Upload the created points stored in the points file to the storage.
+        """
         cloud_manager.upload_points(points_file_path)
 
     def localize_self(self, radius_anchor_1=5, radius_anchor_2=5):
-        self.reset_arm_position()
+        """
+        Take 48 photos following the diagram, calling to a cloud function to through computer vision, find the anchors
+        in them, transform theirs in image position to angles for the motor to go, points at that direction and measures
+        the distance. Once both anchors have been found, triangulates the position and orientation of the robot on the
+        coordinate system that puts the 0,0,0 at the position of the anchor 1, and the x vector pointing towards the
+        anchor 2.
+
+        @param radius_anchor_1: Radius of the anchor 1. To be added to the distance measured to surface of said anchor
+        to find it's center.
+        @param radius_anchor_2: Radius of the anchor 2. To be added to the distance measured to surface of said anchor
+        to find it's center.
+        """
 
         # Diagram of the movement
         # Angles:  0°   30°   60°   90°  120°  150°  180°  210°  240°  270°  300°  330°
@@ -99,6 +149,8 @@ class Robot:
         #   -60°: 24 <- 23 <- 22 <- 21 <- 20 <- 19 <- 18 <- 17 <- 16 <- 15 <- 14 <- 13
         #   -90°: 25 -> 26 -> 27 -> 28 -> 29 -> 30 -> 31 -> 32 -> 33 -> 34 -> 35 -> 36
         #  -120°: 48 <- 47 <- 46 <- 45 <- 44 <- 43 <- 42 <- 41 <- 40 <- 39 <- 38 <- 37
+
+        self.reset_arm_position()
 
         degrees_between_photos = 30  # Graus a moure la càmera entre fotos
         degrees_between_heights = -30  # Graus a moure la càmera entre altures
@@ -175,7 +227,15 @@ class Robot:
         self.go_to(90, -90)
 
     def find_points_of_interest(self):
-        self.reset_arm_position()
+        """
+        Performs a points of interest scan.
+        Takes 48 photos following the diagram and for each one, calls a cloud function that through computer vision
+        finds the points of interest. It then transforms this in image points to angles for the motors to go later on.
+        Once this whole process finishes, points towards the directions saved before, and measures the distance,
+        creating with the information of where was the robot pointing, the position of the robot in the space, and it's
+        orientation, a 3-dimensional point. Once all the saved directions have been scanned, stores the created points
+        to the points file.
+        """
 
         # Diagram of the movement
         # Angles:  0°   30°   60°   90°  120°  150°  180°  210°  240°  270°  300°  330°
@@ -184,6 +244,8 @@ class Robot:
         #   -60°: 24 <- 23 <- 22 <- 21 <- 20 <- 19 <- 18 <- 17 <- 16 <- 15 <- 14 <- 13
         #   -90°: 25 -> 26 -> 27 -> 28 -> 29 -> 30 -> 31 -> 32 -> 33 -> 34 -> 35 -> 36
         #  -120°: 48 <- 47 <- 46 <- 45 <- 44 <- 43 <- 42 <- 41 <- 40 <- 39 <- 38 <- 37
+
+        self.reset_arm_position()
 
         degrees_between_photos = 30  # Graus a moure la càmera entre fotos
         degrees_between_heights = -30    # Graus a moure la càmera entre altures
@@ -228,7 +290,23 @@ class Robot:
         self.go_to(90, -90)
 
     def localize_self_and_find_points_of_interest(self, radius_anchor_1=5, radius_anchor_2=5):
-        self.reset_arm_position()
+        """
+        Takes 48 fotos following the diagram and for each, calls cloud functions to both fins the anchors and find the
+        points of interest. If the anchors are found, transform theirs in image position to angles for the motor to go,
+        points at that direction, and measures the distance. For the points of interest, their in image position is
+        transformed to angles for the motors to go later on.
+        Once this process finishes, if both anchors have been found, triangulates the position and orientation of the
+        robot on the coordinate system that puts the 0,0,0 at the position of the anchor 1, and the x vector pointing
+        towards the anchor 2.
+        Also, points towards the directions saved before, and measures the distance, creating with the information of
+        where was the robot pointing, the position of the robot in the space, and it's orientation, a 3-dimensional
+        point. Once all the saved directions have been scanned, stores the created points to the points file.
+
+        @param radius_anchor_1: Radius of the anchor 1. To be added to the distance measured to surface of said anchor
+        to find it's center.
+        @param radius_anchor_2: Radius of the anchor 2. To be added to the distance measured to surface of said anchor
+        to find it's center.
+        """
 
         # Diagram of the movement
         # Angles:  0°   30°   60°   90°  120°  150°  180°  210°  240°  270°  300°  330°
@@ -237,6 +315,8 @@ class Robot:
         #   -60°: 24 <- 23 <- 22 <- 21 <- 20 <- 19 <- 18 <- 17 <- 16 <- 15 <- 14 <- 13
         #   -90°: 25 -> 26 -> 27 -> 28 -> 29 -> 30 -> 31 -> 32 -> 33 -> 34 -> 35 -> 36
         #  -120°: 48 <- 47 <- 46 <- 45 <- 44 <- 43 <- 42 <- 41 <- 40 <- 39 <- 38 <- 37
+
+        self.reset_arm_position()
 
         degrees_between_photos = 30  # Graus a moure la càmera entre fotos
         degrees_between_heights = -30  # Graus a moure la càmera entre altures
@@ -316,10 +396,25 @@ class Robot:
         self.go_to(90, -90)
 
     def take_wide_barrage_of_points(self, n_img_max=180, degrees_between_heights=-2, needs_reset=True):
+        """
+        Moves doing zig-zag from 0° to -120° in vertical, and from 0° to 360° in horizontal, stopping, and
+        taking a measure of the distance to create a 3-dimensional point in base to that distance, to where is pointing
+        the robot, its positioning the space and its orientation. The heights at which the robot will do an horizontal
+        line scanning distances is determined by degrees_between_heights, and how many points creates at which height
+        is determined using a function of sinus and n_img_max. Once finished, stores the created points in the
+        points file.
+
+        @param n_img_max: Number of scans that will be performed in the -90° height (the height at which more scans are
+        performed). It will be used in the following manner: sin(vertical position) *  n_img_max.
+        @param degrees_between_heights: Number of degrees between each zig-zag.
+        @param needs_reset: Boolean that indicates whether the robot needs to recalibrate the 0° vertical and 0°
+        horizontal of the arm, or if it has already been calibrated and we already know the arms position.
+        """
+
         if needs_reset:
             self.reset_arm_position()
         
-        if(degrees_between_heights >= 0):
+        if degrees_between_heights >= 0:
             raise Exception("degrees_between_heights has to be a negative number")
         
         v_stops = int(120 / abs(degrees_between_heights))
@@ -359,6 +454,10 @@ class Robot:
         self.go_to(90, -90)
 
     def reset_arm_position(self):
+        """
+        Moves the arm horizontally clockwise till the micro-switch 1 has been pressed, then moves the arm vertically
+        counter-clockwise till the micro-switch 2 has been pressed. Then sets the current state of the arm as λ=0° φ=0°
+        """
         self.stepper1.direction = False
         self.stepper2.direction = True
         i = 0
@@ -384,13 +483,17 @@ class Robot:
         self.current_state['lambda'] = 0.0
         self.current_state['phi'] = 0.0
 
-        self.stepper1.total_steps_counter = 0
-        self.stepper2.total_steps_counter = 0
-
         self.go_to(90, -90)
         time.sleep(5)
 
     def go_to(self, new_lambda, new_phi):
+        """
+        Moves the arm to the new lambda and new phi from the current position.
+
+        @param new_lambda: Lambda (horizontal position) where the arm will end up
+        @param new_phi: Phi (vertical position) where the arm will end up.
+        """
+
         if new_lambda < 0.0 or new_lambda >= 360.0 or new_phi > 0.0 or new_phi < -180.0:
             raise Exception("Illegal new state of motors: Lambda: " + str(new_lambda) + " Phi: " + str(new_phi))
 
@@ -415,6 +518,15 @@ class Robot:
         self.current_state['phi'] = self.current_state['phi'] + real_inc_phi
     
     def __scan_specific_angles(self, to_visit):
+        """
+        Measure the distance at the angles in to_visit, creates a 3-dimensional point in base at the distance measured,
+        the direction the robot is pointing, and the position and orientation of the robot in the space. Once finished,
+        stores all the created points in the points file.
+
+        @param to_visit: List of lists of 2 elements, the first is the lambda and the second the phi. Angles to go
+        measure the distance.
+        """
+
         points = []
         for angles in to_visit:
             self.go_to(angles[0], angles[1])
@@ -426,6 +538,9 @@ class Robot:
         print_points_to_file(points)
     
     def cleanup(self):
+        """
+        Cleans up the pins of the raspberry pi.
+        """
         self.stepper1.cleanup()
         self.stepper2.cleanup()
         GPIO.cleanup()

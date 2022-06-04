@@ -4,12 +4,22 @@ points_file_path = "./points/points"
 
 
 def find_coord_self(lambda_a, fi_a, dist_a, lambda_b, fi_b, dist_b):
-    #print("Lambda_a: " + str(lambda_a))
-    #print("Fi_a: " + str(fi_a))
-    #print("Dist_a: " + str(dist_a))
-    #print("Lambda_b: " + str(lambda_b))
-    #print("Fi_b: " + str(fi_b))
-    #print("Dist_b: " + str(dist_b))
+    """
+    Triangulates the position of the robot in base of the direction where the anchor 1 was found, the distance to it,
+    the direction where the anchor 2 was found, and the distance to it. Puts the 0, 0, 0 at the position of the anchor 1
+    and the vector x pointing towards the anchor 2.
+
+    @param lambda_a: Horizontal angle where the anchor 1 was found.
+    @param fi_a: Vertical angle where the anchor 1 was found (0° in th pole north of the sphere that represents the
+    working area of the arm).
+    @param dist_a: Distance to the anchor 1.
+    @param lambda_b: Horizontal angle where the anchor 2 was found.
+    @param fi_b: Vertical angle where the anchor 2 was found (0° in th pole north of the sphere that represents the
+    working area of the arm).
+    @param dist_b: Distance to the anchor 2.
+    @return: Coordinates x, y z of th position, and the angle of orientation from the vector x of the coordinates
+    system clockwise to the 0° horizontal of the robot.
+    """
     
     # Les coordenades (0,0) aniran sobre l'ancora A amb z vertical i x apuntant a la direcció de l'ancora B
     #   de tal manera que l'ancora B quedara situada sobre el pla XZ.
@@ -64,15 +74,24 @@ def find_coord_self(lambda_a, fi_a, dist_a, lambda_b, fi_b, dist_b):
             orient = orient + 180
             if orient >= 360:
                 orient = orient - 360
-                
-    #print("x: " + str(x))
-    #print("y: " + str(y))
-    #print("z: " + str(z))
-    #print("orient: " + str(orient))
+
     return x, y, z, orient
 
 
 def image_point_to_angle_config(x_mov, y_mov, lambda_img, fi_img, open_h, size_h, size_v):
+    """
+    Receives the normalized position inside of an image, and transforms that to the angle configuration the motors have
+    to go to point at that position of the image taken by the camera.
+
+    @param x_mov: In image position horizontal (0 at the left, 1 at the right)
+    @param y_mov: In image position vertical (0 at the top, 1 at the bottom)
+    @param lambda_img: Horizontal position of the arm when the photo was taken.
+    @param fi_img: Vertical position of the arm when the photo was taken.
+    @param open_h: Horizontal aperture of the camera.
+    @param size_h: Horizontal size of the image
+    @param size_v: Vertical size of the image.
+    @return: New configuration of angles for the motors to point in the direction of the position in the image.
+    """
 
     x = x_mov - 0.5  # Posem el (0,0) de les coordenades normalitzades al centre de la imatge
     y = y_mov - 0.5
@@ -89,22 +108,24 @@ def image_point_to_angle_config(x_mov, y_mov, lambda_img, fi_img, open_h, size_h
         lambda_dest = lambda_dest - 360
     elif lambda_dest < 0:
         lambda_dest = 360 + lambda_dest
-    
-    #print("x_mov: " + str(x_mov))
-    #print("y_mov: " + str(y_mov))
-    #print("Lambda_img: " + str(lambda_img))
-    #print("Fi_img: " + str(fi_img))
-    #print("Open_h: " + str(open_h))
-    #print("Size_h: " + str(size_h))
-    #print("Size_v: " + str(size_v))
-    #print("Lambda dest: " + str(lambda_dest))
-    #print("Fi dest: " + str(fi_dest))
-    #print("Inc Lambda: " + str(inc_lambda))
-    #print("Inc Fi: " + str(inc_fi))
+
     return lambda_dest, fi_dest
 
 
 def create_point(dist, current_lambda, current_fi, lg_x, lg_y, lg_z, lg_orient):
+    """
+    Creates a 3-dimensional point based in the distance measured, the current direction the robot is pointing towards,
+    the position of the robot in the space, and its orientation.
+
+    @param dist: Distance measured.
+    @param current_lambda: Current horizontal position.
+    @param current_fi: Current Vertical position.
+    @param lg_x: X coordinate of the position of the robot.
+    @param lg_y: Y coordinate of the position of the robot.
+    @param lg_z: Z coordinate of the position of the robot.
+    @param lg_orient: Angle from the vector X of the coordinates system to the 0° horizontal of the robot.
+    @return: A map with the x, y, z of the created point.
+    """
 
     dist_xy = math.sin(math.radians(current_fi)) * dist
 
@@ -121,11 +142,22 @@ def create_point(dist, current_lambda, current_fi, lg_x, lg_y, lg_z, lg_orient):
 
 
 def print_points_to_file(points, file_path=points_file_path):
+    """
+    Prints a list of maps with the x, y, z of points to the points file.
+
+    @param points: List of maps with the x, y, z of points
+    @param file_path: Path to the points file.
+    """
     with open(file_path, 'a') as file:
         for point in points:
             file.write(str(point['x']) + ',' + str(point['y']) + ',' + str(point['z']) + '\n')
 
 
 def clear_points_file(file_path=points_file_path):
+    """
+    Clear the points stored in the points file in order to start a new scan.
+
+    @param file_path: Path to the points file.
+    """
     with open(file_path, 'r+') as file:
         file.truncate(0)

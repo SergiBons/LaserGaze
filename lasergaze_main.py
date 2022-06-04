@@ -1,6 +1,12 @@
 from lasergaze import Robot
 import sys
 
+"""
+Receives the behaviour for the robot, checks if the introduced behaviour is valid, check the optional parameters
+n_img_max and degrees_between_heights, creates the instance of the Robot, and calls at the corresponding function
+dictated by the behaviour. When finished calls at the cleanup of the robot.
+"""
+
 robot = None
 try:
     if(len(sys.argv)) < 2:

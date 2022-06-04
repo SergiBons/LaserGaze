@@ -66,6 +66,26 @@ def send_image_find_interesting_points(file_path):
 
 
 def send_image_find_anchors_and_find_interesting_points(file_path, anchor_1_already_found, anchor_2_already_found):
+    """
+    Uploads an image to storage, and send it's uri both the anchor recognition cloud function, in order to get back if
+    the anchors were found in that image, and if they were, also get back their position inside the image, and to the
+    find_interesting_points cloud function in order to get back 100 points of interest found in the image.
+
+    Arguments.
+    file_path: String path to the image to process.
+    anchor_1_already_found: Boolean indicating if the anchor 1 has already been found.
+    anchor_2_already_found: Boolean indicating if the anchor 2 has already been found.
+
+    Returns.
+    anchor_1_found: Boolean, True if the anchor 1 have been found, False otherwise.
+    anchor_2_found: Boolean, True if the anchor 2 have been found, False otherwise.
+    anchor_1: Map of 2 components, 'x' and 'y' each containing a float that represents the normalized location of the
+                anchor 1 in the image.
+    anchor_2: Map of 2 components, 'x' and 'y' each containing a float that represents the normalized location of the
+                anchor 2 in the image.
+    resposta: List of 100 elements with a map each which contains 2 elements 'x' and 'y' which in turn contains a float
+                 that represents the absolute position of the points of interest in the image.
+    """
 
     image_url = upload_to_bucket("test.jpg", file_path)
     uri = urlparse(image_url).path
